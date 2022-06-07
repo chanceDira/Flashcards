@@ -34,6 +34,7 @@ export interface NexusGenObjects {
     plan: string; // String!
     task: string; // String!
   }
+  Mutation: {};
   Query: {};
 }
 
@@ -54,7 +55,13 @@ export interface NexusGenFieldTypes {
     plan: string; // String!
     task: string; // String!
   }
+  Mutation: { // field return type
+    deleteCard: NexusGenRootTypes['Card'][]; // [Card!]!
+    post: NexusGenRootTypes['Card']; // Card!
+    updateCard: NexusGenRootTypes['Card'][]; // [Card!]!
+  }
   Query: { // field return type
+    card: NexusGenRootTypes['Card'][]; // [Card!]!
     feed: NexusGenRootTypes['Card'][]; // [Card!]!
   }
 }
@@ -66,12 +73,39 @@ export interface NexusGenFieldTypeNames {
     plan: 'String'
     task: 'String'
   }
+  Mutation: { // field return type name
+    deleteCard: 'Card'
+    post: 'Card'
+    updateCard: 'Card'
+  }
   Query: { // field return type name
+    card: 'Card'
     feed: 'Card'
   }
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    deleteCard: { // args
+      id: number; // Int!
+    }
+    post: { // args
+      category: string; // String!
+      plan: string; // String!
+      task: string; // String!
+    }
+    updateCard: { // args
+      category: string; // String!
+      id: number; // Int!
+      plan: string; // String!
+      task: string; // String!
+    }
+  }
+  Query: {
+    card: { // args
+      id: number; // Int!
+    }
+  }
 }
 
 export interface NexusGenAbstractTypeMembers {

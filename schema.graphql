@@ -9,6 +9,13 @@ type Card {
   task: String!
 }
 
+type Mutation {
+  deleteCard(id: Int!): [Card!]!
+  post(category: String!, plan: String!, task: String!): Card!
+  updateCard(category: String!, id: Int!, plan: String!, task: String!): [Card!]!
+}
+
 type Query {
+  card(id: Int!): [Card!]!
   feed: [Card!]!
 }
