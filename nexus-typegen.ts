@@ -4,7 +4,7 @@
  */
 
 
-
+import type { Context } from "./src/context"
 
 
 
@@ -56,9 +56,9 @@ export interface NexusGenFieldTypes {
     task: string; // String!
   }
   Mutation: { // field return type
-    deleteCard: NexusGenRootTypes['Card'][]; // [Card!]!
+    deleteCard: NexusGenRootTypes['Card']; // Card!
     post: NexusGenRootTypes['Card']; // Card!
-    updateCard: NexusGenRootTypes['Card'][]; // [Card!]!
+    updateCard: NexusGenRootTypes['Card']; // Card!
   }
   Query: { // field return type
     card: NexusGenRootTypes['Card'][]; // [Card!]!
@@ -139,7 +139,7 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: any;
+  context: Context;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
   inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;
