@@ -30,9 +30,9 @@ let cards: NexusGenObjects["Card"][]= [
 export const cardQuery = extendType({  
     type: "Query",
     definition(t) {
-        t.nonNull.list.nonNull.field("feed", {   // 3
+        t.nonNull.list.nonNull.field("feed", {  
             type: "Card",
-            resolve(parent, args, context, info) {    // 4
+            resolve(parent, args, context, info) {   
                 return cards;
             },
         });
@@ -40,15 +40,15 @@ export const cardQuery = extendType({
 });
 
 {/*===========Get single card===========*/}
-export const singleLinkQuery = extendType({  // 2
+export const singleLinkQuery = extendType({  
     type: "Query",
     definition(t) {
-        t.nonNull.list.nonNull.field("card", {   // 3
+        t.nonNull.list.nonNull.field("card", {  
             type: "Card",
-            args: {   // 3
+            args: {  
                 id: nonNull(intArg()),
             },
-            resolve(parent, args, context, info) {    // 4
+            resolve(parent, args, context, info) {  
                 const { id } = args; 
                 let card = cards.filter(l => l.id === id)
                     return card
@@ -58,21 +58,21 @@ export const singleLinkQuery = extendType({  // 2
 });
 
 {/*===========Create cards===========*/}
-export const LinkMutation = extendType({  // 1
+export const LinkMutation = extendType({  
     type: "Mutation",    
     definition(t) {
-        t.nonNull.field("post", {  // 2
+        t.nonNull.field("post", { 
             type: "Card",  
-            args: {   // 3
+            args: {  
                 category: nonNull(stringArg()),
                 task: nonNull(stringArg()),
                 plan: nonNull(stringArg())
             },
             
             resolve(parent, args, context) {    
-                const { category, task, plan } = args;  // 4
+                const { category, task, plan } = args;  
                 
-                let idCount = cards.length + 1;  // 5
+                let idCount = cards.length + 1;  
                 const card = {
                     id: idCount,
                     category: category,
@@ -87,18 +87,18 @@ export const LinkMutation = extendType({  // 1
 });
 
 {/*===========Update card===========*/}
-export const updateLinkQuery = extendType({  // 2
+export const updateLinkQuery = extendType({  
     type: "Mutation",
     definition(t) {
-        t.nonNull.list.nonNull.field("updateCard", {   // 3
+        t.nonNull.list.nonNull.field("updateCard", {   
             type: "Card",
-            args: {   // 3
+            args: {   
                 id: nonNull(intArg()),
                 category: nonNull(stringArg()),
                 task: nonNull(stringArg()),
                 plan: nonNull(stringArg()),
             },
-            resolve(parent, args, context, info) {    // 4
+            resolve(parent, args, context, info) {    
                 const { id, category, task, plan } = args; 
 
                 let updatedCards = cards.filter(c => c.id == id)
@@ -115,15 +115,15 @@ export const updateLinkQuery = extendType({  // 2
 });
 
 {/*===========Delete card===========*/}
-export const deleteLinkQuery = extendType({  // 2
+export const deleteLinkQuery = extendType({  
     type: "Mutation",
     definition(t) {
-        t.nonNull.list.nonNull.field("deleteCard", {   // 3
+        t.nonNull.list.nonNull.field("deleteCard", {   
             type: "Card",
-            args: {   // 3
+            args: {   
                 id: nonNull(intArg()),
             },
-            resolve(parent, args, context, info) {    // 4
+            resolve(parent, args, context, info) {    
                 const { id } = args; 
                 let updatedCards = cards.filter(c => c.id !== id)
                 cards = updatedCards
