@@ -2,20 +2,50 @@
 ### Do not make changes to this file directly
 
 
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
 type Card {
   category: String!
+  createdBy: User
   id: Int!
   plan: String!
   task: String!
 }
 
+input CardOrderByInput {
+  category: Sort
+  createdAt: Sort
+  plan: Sort
+  task: Sort
+}
+
 type Mutation {
   deleteCard(id: Int!): Card!
+  deleteUser(id: Int!): User!
+  login(email: String!, password: String!): AuthPayload!
   post(category: String!, plan: String!, task: String!): Card!
+  signup(email: String!, name: String!, password: String!): AuthPayload!
   updateCard(category: String!, id: Int!, plan: String!, task: String!): Card!
+  updateUser(email: String!, id: Int!, name: String!): User!
 }
 
 type Query {
   card(id: Int!): [Card!]!
-  feed: [Card!]!
+  feed(filter: String, orderBy: [CardOrderByInput!], skip: Int, take: Int): [Card!]!
+  userFeed: [User!]!
+}
+
+enum Sort {
+  asc
+  desc
+}
+
+type User {
+  cards: [Card!]!
+  email: String!
+  id: Int!
+  name: String!
 }

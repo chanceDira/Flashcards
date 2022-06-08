@@ -15,6 +15,16 @@ model Card {
   id          Int      @id @default(autoincrement())   
   createdAt   DateTime @default(now())  
   category    String
-  task        String
+  task        String   @unique
   plan        String
+  createdBy    User?   @relation(fields: [createdById], references: [id])
+  createdById  Int?
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  cards     Card[]
 }

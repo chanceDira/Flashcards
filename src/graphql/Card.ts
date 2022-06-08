@@ -1,4 +1,5 @@
-import { extendType, nonNull, objectType, stringArg, intArg } from "nexus"; 
+import { extendType, nonNull, objectType, stringArg, intArg, inputObjectType, enumType, arg, list } from "nexus";
+import { Prisma } from "@prisma/client"
 import { NexusGenObjects } from "../../nexus-typegen";  
 
 export const Card = objectType({
@@ -8,6 +9,14 @@ export const Card = objectType({
         t.nonNull.string("category"); 
         t.nonNull.string("task"); 
         t.nonNull.string("plan"); 
+        t.field("createdBy", {   // 1
+            type: "User",
+            resolve(parent, args, context) {  // 2
+                return context.prisma.card
+                    .findUnique({ where: { id: parent.id } })
+                    .createdBy();
+            },
+        });
     },
 });
 
@@ -26,14 +35,49 @@ let cards: NexusGenObjects["Card"][]= [
     },
 ];
 
+export const CardOrderByInput = inputObjectType({
+    name: "CardOrderByInput",
+    definition(t) {
+        t.field("category", { type: Sort });
+        t.field("task", { type: Sort });
+        t.field("plan", { type: Sort });
+        t.field("createdAt", { type: Sort });
+    },
+});
+
+export const Sort = enumType({
+    name: "Sort",
+    members: ["asc", "desc"],
+});
+
 {/*===========Get cards===========*/}
 export const cardQuery = extendType({  
     type: "Query",
     definition(t) {
         t.nonNull.list.nonNull.field("feed", {   
             type: "Card",
+            args: {
+                filter: stringArg(),   
+                skip: intArg(),   
+                take: intArg(), 
+                orderBy: arg({ type: list(nonNull(CardOrderByInput)) }),
+            },
             resolve(parent, args, context, info) {    
-                return context.prisma.card.findMany(); 
+                const where = args.filter   
+                    ? {
+                          OR: [
+                              { category: { contains: args.filter } },
+                              { task: { contains: args.filter } },
+                              { plan: { contains: args.filter } }
+                          ],
+                      }
+                    : {};
+                return context.prisma.card.findMany({
+                    where,
+                    skip: args?.skip as number | undefined,    
+                    take: args?.take as number | undefined,
+                    orderBy: args?.orderBy as Prisma.Enumerable<Prisma.CardOrderByWithRelationInput> | undefined,
+                });
             },
         });
     },
@@ -75,14 +119,20 @@ export const CardMutation = extendType({
                 plan: nonNull(stringArg())
             },
             
-            resolve(parent, args, context) {    
+            async resolve(parent, args, context) {    
                 const { category, task, plan } = args;  
+                const { userId } = context;
+
+                if (!userId) {  
+                    throw new Error("Cannot post without logging in.");
+                }
                 
                 const newCard = context.prisma.card.create({
                     data: {
-                        category: category,
-                        task: task,
-                        plan: plan
+                        category,
+                        task,
+                        plan,
+                        createdBy: { connect: { id: userId } },
                        },
                 });
 
@@ -106,6 +156,11 @@ export const updateCardQuery = extendType({
             },
             resolve(parent, args, context, info) {    
                 const { id, category, task, plan } = args; 
+                const { userId } = context;
+
+                if (!userId) {  
+                    throw new Error("Cannot update card without logging in.");
+                }
 
                 const updateCard = context.prisma.card.update({
                     where: {
@@ -135,6 +190,12 @@ export const deleteCardQuery = extendType({
             },
             resolve(parent, args, context, info) {    
                 const { id } = args; 
+                const { userId } = context;
+
+                if (!userId) {  
+                    throw new Error("Cannot delete card without logging in.");
+                }
+
                 const deleteCard = context.prisma.card.delete({
                     where: {
                       id: id,
